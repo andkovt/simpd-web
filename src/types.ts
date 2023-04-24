@@ -1,3 +1,8 @@
+export interface FlashMessage {
+    message: string;
+    type: string;
+}
+
 export interface Container {
     id: string;
     name: string;

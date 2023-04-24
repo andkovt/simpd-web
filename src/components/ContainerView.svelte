@@ -1,7 +1,19 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
 	import type { Container } from "../types";
+	import Button from "./Button.svelte";
 
     export let container: Container;
+    export let onDeleteClick: any;
+
+    const deleteClicked = () => {
+        onDeleteClick(container);
+    }
+
+    const editClicked = () => {
+        goto(`/edit-container/${container.id}`);
+    }
+
 </script>
 
 <div class="p-2 border-b flex justify-between items-center">
@@ -13,7 +25,7 @@
         <!-- Mounts -->
     </div>
     <div>
-        <button class="btn btn-sm">Edit</button>
-        <button class="btn btn-sm btn-error">Delete</button>
+        <Button name="Edit" small={true} icon="faEdit" onClick="{editClicked}"/>
+        <Button name="Delete" small={true} type="error" icon="faTrash" onClick="{deleteClicked}" />
     </div>
 </div>
