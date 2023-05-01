@@ -1,21 +1,23 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import Toolbar from '../components/Toolbar.svelte';
 	import type { Container } from "../types";
-	import ContainerView from "../components/ContainerView.svelte";
+	import ContainerView from "../components/container/ContainerView.svelte";
 	import { env } from '$env/dynamic/public';
-	import flashManager from '$lib/flash-manager';
+	import Button from "../components/common/Button.svelte";
+	import { goto } from "$app/navigation";
+	import notificationManager from "$lib/notification-manager";
 	
 	let containers: Container[] = [];
-	let error: string = '';
+	let loaded: boolean = false;
 
 	onMount(async () => {
 		try {
 			const response = await fetch(`${env.PUBLIC_BACKEND}/containers`);
 			const body = await response.json()
 			containers = body;
+			loaded = true;
 		} catch(e) {
-			error = 'Unable to connect to the backend';
+			notificationManager.add('Unable to connect to the backend', 'error');
 		}
 	});
 
@@ -34,7 +36,7 @@
 				return;
 			}
 
-			flashManager.add({message: 'Unknown error deleting the container', type: 'error'});
+			notificationManager.add('Unknown error deleting container', 'error');
 		} catch (e) {
 			console.log(e);
 		}
@@ -47,10 +49,12 @@
 </svelte:head>
 
 <section>
-	{#if error}
-		<div class="text-red-500">{error}</div>
-	{:else}
-		<Toolbar/>
+	{#if loaded}
+		<div class="flex justify-between border-b border-base-300 p-2">
+			<div class="flex gap-1">
+				<Button name="Add" icon="faPlus" type="primary" onClick="{() => goto('/create-container')}" />
+			</div>
+		</div>
 		{#each containers as container}
 			<ContainerView container={container} onDeleteClick={onDeleteClick} />
 		{/each}
