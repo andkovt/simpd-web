@@ -13,6 +13,8 @@
         mounts: [],
         ports: [],
         environmentVariables: [],
+        state: '',
+        status: ''
     };
 
     let containerEditElement: ContainerEdit;

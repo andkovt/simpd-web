@@ -1,16 +1,17 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onMount, onDestroy } from "svelte";
 	import type { Container } from "../types";
-	import ContainerView from "../components/container/ContainerView.svelte";
 	import { env } from '$env/dynamic/public';
 	import Button from "../components/common/Button.svelte";
 	import { goto } from "$app/navigation";
 	import notificationManager from "$lib/notification-manager";
+	import ContainerList from "../components/container/ContainerList.svelte";
 	
 	let containers: Container[] = [];
 	let loaded: boolean = false;
 
-	onMount(async () => {
+	let refreshIntervalId = -1;
+	const loadContainers = async () => {
 		try {
 			const response = await fetch(`${env.PUBLIC_BACKEND}/containers`);
 			const body = await response.json()
@@ -19,11 +20,24 @@
 		} catch(e) {
 			notificationManager.add('Unable to connect to the backend', 'error');
 		}
+	}
+
+	onMount(async () => {
+		await loadContainers();
+
+		refreshIntervalId = setInterval(async () => {
+			await loadContainers();
+		}, 1000);
 	});
+
+	onDestroy(() => {
+		if (refreshIntervalId !== -1) {
+			clearInterval(refreshIntervalId);
+		}
+	})
 
 	const onDeleteClick = async (container: Container) => {
 		try {
-			console.log('what');
 			const response = await fetch(`${env.PUBLIC_BACKEND}/containers/${container.id}`, {
 				method: 'DELETE',
 			});
@@ -41,6 +55,20 @@
 			console.log(e);
 		}
 	};
+
+	const onToggleStateClick = async (container: Container) => {
+		const preferredState = container.state === 'running' ? 0 : 1;
+		const response = await fetch(`${env.PUBLIC_BACKEND}/containers/${container.id}/state`, {
+				method: 'PUT',
+				headers: {
+                	'Accept': 'application/json',
+                	'Content-Type': 'application/json'
+            	},
+            	body: JSON.stringify({state: preferredState}),
+			});
+
+		await loadContainers();
+	}
 </script>
 
 <svelte:head>
@@ -55,8 +83,7 @@
 				<Button name="Add" icon="faPlus" type="primary" onClick="{() => goto('/create-container')}" />
 			</div>
 		</div>
-		{#each containers as container}
-			<ContainerView container={container} onDeleteClick={onDeleteClick} />
-		{/each}
+
+		<ContainerList containers={containers} onDelete={onDeleteClick} onToggleState={onToggleStateClick} />
 	{/if}
 </section>

@@ -17,6 +17,9 @@ export interface Container {
     mounts: Mount[];
     ports: Port[];
     environmentVariables: EnvironmentVariable[];
+
+    state: string;
+    status: string;
 };
 
 export interface Mount {
