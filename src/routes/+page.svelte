@@ -24,10 +24,12 @@
 
 	onMount(async () => {
 		await loadContainers();
-
-		refreshIntervalId = setInterval(async () => {
-			await loadContainers();
-		}, 1000);
+		
+		if (loaded) {
+			refreshIntervalId = setInterval(async () => {
+				await loadContainers();
+			}, 1000);
+		}
 	});
 
 	onDestroy(() => {

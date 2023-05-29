@@ -18,7 +18,7 @@
         <th>Ports</th>
         <th>Variables</th>
         <th>Status</th>
-        <th>Actions</th>
+        <th></th>
     </tr>
     {#each containers as container}
         <ContainerListItem container={container} onDelete={onDelete} onToggleState={onToggleState} />
