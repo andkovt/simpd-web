@@ -8,7 +8,7 @@ RUN npm run build
 FROM node:20-alpine AS deploy
 
 WORKDIR /app
-COPY --from=build /app/.env ./.env
+COPY --from=build /app/.env.prod ./.env
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/node_modules/ ./node_modules
 COPY --from=build /app/build ./build
