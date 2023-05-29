@@ -7,6 +7,7 @@
 	import Button from '../../../components/common/Button.svelte';
 	import { goto } from '$app/navigation';
     import notificationManager from '$lib/notification-manager';
+    import urlBuilder from '$lib/url-builder';
 
     const containerId = $page.params.id;
     let container: Container|null = null;
@@ -14,7 +15,7 @@
     let editComponent: ContainerEdit|null;
 
     onMount(async () => {
-        const response = await fetch(`${env.PUBLIC_BACKEND}/containers/${containerId}`);
+        const response = await fetch(urlBuilder(`containers/${containerId}`));
 
         if (!response.ok) {
             notificationManager.add('Error fetching container', 'error');
@@ -35,7 +36,7 @@
             return;
         }
 
-        const response = await fetch(`${env.PUBLIC_BACKEND}/containers/${containerId}`, {
+        const response = await fetch(urlBuilder(`containers/${containerId}`), {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',

@@ -4,6 +4,7 @@
 	import DirectoryTree from "./DirectoryTree.svelte";
     import { env } from '$env/dynamic/public';
     import { clickOutside } from '$lib/click-outside';
+    import urlBuilder from "$lib/url-builder";
 
     export let value: string;
 
@@ -12,14 +13,14 @@
     let inputFocused = false;
 
     onMount(async () => {
-        const response = await fetch(`${env.PUBLIC_BACKEND}/autocomplete/path?path=/`);
+        const response = await fetch(urlBuilder('autocomplete/path?path=/'));
         const body = await response.json();
 
         tree = body;
     });
 
     const onDirectoryClick = async (directory: Directory) => {
-        const response = await fetch(`${env.PUBLIC_BACKEND}/autocomplete/path?path=${directory.path}`);
+        const response = await fetch(urlBuilder(`autocomplete/path?path=${directory.path}`));
         const body = await response.json();
 
         updateTree(directory.path, body);

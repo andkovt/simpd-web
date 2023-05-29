@@ -4,6 +4,7 @@
     import ContainerEdit from "../../components/container/ContainerEdit.svelte";
     import type { Container } from "../../types";
     import { v4 as uuidv4 } from 'uuid';
+    import urlBuilder from "$lib/url-builder";
 
     let container: Container = {
         id: uuidv4(),
@@ -26,7 +27,7 @@
             return;
         }
 
-        const result = await fetch('http://localhost:5051/containers', {
+        const result = await fetch(urlBuilder('containers'), {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

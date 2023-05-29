@@ -6,6 +6,7 @@
 	import { goto } from "$app/navigation";
 	import notificationManager from "$lib/notification-manager";
 	import ContainerList from "../components/container/ContainerList.svelte";
+	import urlBuilder from "$lib/url-builder";
 	
 	let containers: Container[] = [];
 	let loaded: boolean = false;
@@ -13,7 +14,7 @@
 	let refreshIntervalId = -1;
 	const loadContainers = async () => {
 		try {
-			const response = await fetch(`${env.PUBLIC_BACKEND}/containers`);
+			const response = await fetch(urlBuilder('containers'));
 			const body = await response.json()
 			containers = body;
 			loaded = true;
@@ -40,7 +41,7 @@
 
 	const onDeleteClick = async (container: Container) => {
 		try {
-			const response = await fetch(`${env.PUBLIC_BACKEND}/containers/${container.id}`, {
+			const response = await fetch(urlBuilder(`containers/${container.id}`), {
 				method: 'DELETE',
 			});
 
@@ -60,7 +61,7 @@
 
 	const onToggleStateClick = async (container: Container) => {
 		const preferredState = container.state === 'running' ? 0 : 1;
-		const response = await fetch(`${env.PUBLIC_BACKEND}/containers/${container.id}/state`, {
+		const response = await fetch(urlBuilder(`containers/${container.id}/state`), {
 				method: 'PUT',
 				headers: {
                 	'Accept': 'application/json',
